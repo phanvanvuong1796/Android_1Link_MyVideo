@@ -1,10 +1,14 @@
 package com.pv.myvideo.adapter;
 
 import android.databinding.DataBindingUtil;
+import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import com.pv.myvideo.R;
 import com.pv.myvideo.databinding.ListItemBinding;
 import com.pv.myvideo.model.FileModel;
@@ -43,6 +47,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     @Override
     public void onBindViewHolder(FileViewHolder holder, int position) {
         FileModel fileModel = modelList.get(position);
+        holder.imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(fileModel.getImgLink(),
+                MediaStore.Video.Thumbnails.MICRO_KIND));
         holder.bind(fileModel);
     }
 
@@ -54,10 +60,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     public class FileViewHolder extends RecyclerView.ViewHolder{
 
         private ListItemBinding mListItemBinding;
+        public ImageView imageView;
 
         public FileViewHolder(View view) {
             super(view);
             mListItemBinding = DataBindingUtil.bind(view);
+            imageView = (ImageView) view.findViewById(R.id.item_thumbnail);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
