@@ -1,13 +1,12 @@
 package com.pv.myvideo.adapter;
 
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-
-import com.pv.myvideo.BR;
 import com.pv.myvideo.R;
+import com.pv.myvideo.databinding.ListItemBinding;
 import com.pv.myvideo.model.FileModel;
 
 import java.util.List;
@@ -18,6 +17,16 @@ import java.util.List;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder>{
 
+    public interface CallBack{
+        public void onClick(FileModel fileModel);
+    }
+
+    private CallBack callBack;
+
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
+    }
+
     private List<FileModel> modelList;
 
     public FileAdapter(List<FileModel> modelList) {
@@ -26,16 +35,15 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     @Override
     public FileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewDataBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
-        return new FileViewHolder(binding);
+        return new FileViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(FileViewHolder holder, int position) {
-        ViewDataBinding binding = holder.getViewDataBinding();
-        binding.setVariable(BR.fileItem, modelList.get(position));
+        FileModel fileModel = modelList.get(position);
+        holder.bind(fileModel);
     }
 
     @Override
@@ -45,16 +53,22 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public class FileViewHolder extends RecyclerView.ViewHolder{
 
-        private ViewDataBinding mViewDataBinding;
+        private ListItemBinding mListItemBinding;
 
-        public FileViewHolder(ViewDataBinding viewDataBinding) {
-            super(viewDataBinding.getRoot());
-            mViewDataBinding = viewDataBinding;
-            mViewDataBinding.executePendingBindings();
+        public FileViewHolder(View view) {
+            super(view);
+            mListItemBinding = DataBindingUtil.bind(view);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.onClick(modelList.get(getPosition()));
+                }
+            });
         }
-
-        public ViewDataBinding getViewDataBinding() {
-            return mViewDataBinding;
+        public void bind(FileModel fileModel){
+            mListItemBinding.setFileItem(fileModel);
         }
     }
+
+
 }
